@@ -1,0 +1,23 @@
+#!/bin/bash -x
+
+echo "Loading sample dataset into hive.."
+#
+kinit -kt /keytabs/admin.keytab admin@{{ ipa_realm }}
+
+HOSTNAME=`hostname`
+HIVE_CMD="hive -u 'jdbc:hive2://${HOSTNAME}:10000/default;ssl=true;sslTrustStore=/opt/cloudera/security/jks/truststore.jks;principal=hive/_HOST@{{ ipa_realm }}'"
+
+echo "Creating external table in hive.."
+$HIVE_CMD -f create-table-prescribing_data_ext.sql 2>&1
+
+echo "Downloading dataset csv file.."
+# from https://opendata.nhsbsa.net/dataset/english-prescribing-data-epd - English Prescribing Dataset (EPD) - Nov 2021 - DOWNLOAD(CSV)
+time wget --no-check-certificate https://opendata.nhsbsa.net/dataset/65050ec0-5abd-48ce-989d-defc08ed837e/resource/1ec38b44-395f-40ac-a8a9-81e661ef0a84/download/epd_202111.csv -O /var/tmp/epd_202111.csv
+
+echo "Loading datafile into table.."
+$HIVE_CMD -f load-table-prescribing_data_ext.sql 2>&1
+
+echo "Describe table.."
+$HIVE_CMD -e 'describe default.prescribing_data_ext' 2>&1
+
+echo "Done."

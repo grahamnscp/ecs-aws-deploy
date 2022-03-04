@@ -1,0 +1,39 @@
+---
+
+- name: "Copy cdp ca files to node"
+  copy:
+    src: working-files/cdp-ca.tar
+    dest: /root/cdp-ca.tar
+    owner: root
+    group: root
+
+- name: "Unpack cdp ca files"
+  shell: "tar -xvf /root/cdp-ca.tar 2>&1 | /bin/tee -a /root/cdp-ca.log"
+  args:
+    executable: /bin/sh
+    chdir: /
+    creates: /root/cdp-ca.log
+
+- name: "Clear ca index.txt file"
+  shell: ": > /opt/cloudera/security/ca/index.txt 2>&1 | /bin/tee -a /root/cdp-ca-index.log"
+  args:
+    executable: /bin/sh
+    chdir: /root
+    creates: /root/cdp-ca-index.log
+
+- name: "Push generate-agent-cert.sh script to host"
+  template:
+    src: generate-agent-cert.sh.j2
+    dest: /root/generate-agent-cert.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Generate host scm certs files"
+  shell: "/root/generate-agent-cert.sh 2>&1 | /bin/tee -a /root/generate-agent-cert.log"
+  args:
+    executable: /bin/sh
+    chdir: /root
+    creates: /root/generate-agent-cert.log
+
+

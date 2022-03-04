@@ -1,0 +1,17 @@
+---
+- debug:
+   msg: "INFRA HOST INFO: infra.{{ name_prefix }}.{{ route53_domainname }}"
+
+- name: "Need to sync clock ({{ fqdn }}) stopping ntpd service"
+  systemd:
+    name: ntpd
+    state: stopped
+
+- name: "Set clock to right time"
+  shell: "/usr/sbin/ntpdate infra.{{ name_prefix }}.{{ route53_domainname }}"
+  changed_when: false
+
+- name: "Restarting ntpd"
+  systemd:
+    name: ntpd
+    state: started

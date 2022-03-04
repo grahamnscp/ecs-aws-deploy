@@ -1,0 +1,6 @@
+[cloudera-manager-local]
+name=Cloudera Manager local - {{ cloudera_manager_version }}
+baseurl=http://cdp.{{ name_prefix }}.{{ route53_domainname }}:3333/cm{{ cloudera_manager_version }}
+gpgkey=http://cdp.{{ name_prefix }}.{{ route53_domainname }}:3333/cm{{ cloudera_manager_version }}/RPM-GPG-KEY-cloudera
+enabled=1
+gpgcheck=1

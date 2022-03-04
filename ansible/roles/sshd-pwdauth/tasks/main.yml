@@ -1,0 +1,20 @@
+---
+
+- name: "sshd set PasswordAuthentication yes"
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#PasswordAuthentication'
+    line: 'PasswordAuthentication yes'
+
+- name: "sshd comment PasswordAuthentication no"
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication no'
+    line: '#PasswordAuthentication no'
+
+- name: "restart sshd"
+  systemd:
+     name: sshd 
+     state: restarted
+     daemon_reload: yes
+

@@ -1,0 +1,22 @@
+---
+
+- name: "Push config-postgres-ssl.sh script to host"
+  template:
+    src: config-postgres-ssl.sh.j2
+    dest: /root/config-postgres-ssl.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Configuring Postgresql for SSL"
+  shell: "/root/config-postgres-ssl.sh 2>&1 | /bin/tee -a /root/config-postgres-ssl.log"
+  args: 
+    executable: /bin/sh
+    chdir: /root
+    creates: /root/config-postgres-ssl.log
+
+- name: "Restarting postgresql-10"
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: postgresql-10

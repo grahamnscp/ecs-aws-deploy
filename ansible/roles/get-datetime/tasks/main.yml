@@ -1,0 +1,23 @@
+---
+
+#- name: Datetime
+#  hosts: localhost
+#
+#  tasks:
+#  - name: Ansible fact - ansible_date_time
+#    debug:
+#      var: ansible_date_time
+#
+#  - name: Ansible fact - ansible_date_time.iso8601
+#    debug:
+#     msg: "DATETIME: {{ ansible_date_time.iso8601 }}"
+
+- name: Datetime
+  debug:
+    var: ansible_date_time
+  delegate_to: localhost
+
+- name: Ansible fact - ansible_date_time.iso8601
+  debug:
+    msg: "DATETIME: {{ ansible_date_time.iso8601 }}"
+  delegate_to: localhost

@@ -1,0 +1,15 @@
+$ORIGIN .
+$TTL 10800	; 3 hours
+1.12.172.in-addr.arpa	IN      SOA     infra.##DOMAIN##. root.##SUBNET_REV##.in-addr.arpa. (
+				10         ; serial
+				86400      ; refresh (1 day)
+				3600       ; retry (1 hour)
+				604800     ; expire (1 week)
+				3600       ; minimum (1 hour)
+				)
+			NS infra.##DOMAIN##.
+$ORIGIN	##SUBNET_REV##.in-addr.arpa.
+$TTL 86400	; 1 day
+##INFRA_IP_NUM##      IN     PTR    infra.##DOMAIN##.
+##CDP_IP_NUM##      IN     PTR    cdp.##DOMAIN##.
+;

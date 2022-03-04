@@ -1,0 +1,15 @@
+---
+
+- name: "Copy ca files"
+  shell: "tar -cvf /root/cdp-ca.tar /opt/cloudera/security/ca"
+  args:
+    executable: /bin/sh
+    chdir: /root
+    creates: /root/cdp-ca.tar
+
+- name: "Copy back the cdp ca files tar"
+  fetch:
+    src: /root/cdp-ca.tar
+    dest: working-files/cdp-ca.tar
+    flat: yes
+

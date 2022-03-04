@@ -1,0 +1,16 @@
+// zone file for cdp
+
+zone "##DOMAIN##" {
+  type master;
+  file "/var/bind/cdp/##DOMAIN##.db";
+  allow-update { any; };
+};
+
+zone "##SUBNET_REV##.in-addr.arpa" IN {
+  type master;
+  file "/var/bind/cdp/db.##SUBNET_REV##.in-addr.arpa";
+  update-policy {
+    grant rndc-key zonesub ANY;
+  };
+};
+

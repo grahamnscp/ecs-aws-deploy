@@ -1,0 +1,74 @@
+[all:vars]
+
+# Ansible Options
+ansible_user=centos
+ansible_port=22
+ansible_become=yes
+ansible_ssh_private_key_file=##MY_SSH_PRIVATE_KEY_FILE##
+ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
+timeout=120
+deprecation_warnings=False
+#~/.ansible.cfg:[ssh_connection]\scp_if_ssh=True
+
+# Varables
+centos_password=##CENTOS_PASSWORD##
+
+# Infra host variables
+name_prefix=##SUBDOMAIN##
+route53_domainname=##BASEDOMAIN##
+private_subnet=##NTP_PRIVATE_SUBNET##
+docker_storage_device=##DOCKER_STORAGE_DEVICE##
+cdp_cdsw_block_device=##CDP_CDSW_STORAGE_DEVICE##
+dockerhub_user=##DOCKERHUB_USER##
+bind_docker_tag=##BIND_DOCKER_TAG##
+ipa_password=##IPA_PASSWORD##
+ipa_realm=##IPA_REALM##
+
+# CDP variables
+cloudera_manager_version=##CLOUDERA_MANAGER_VERSION##
+cdp_cluster_template=##CDP_CLUSTER_TEMPLATE##
+spark3_parcel_version=##SPARK3_PARCEL_VERSION##
+#
+cloudera_manager_license_file=##CLOUDERA_MANAGER_LICENSE_FILE##
+cdp_remote_repo_usr=##CDP_REMOTE_REPO_USR##
+cdp_remote_repo_pwd=##CDP_REMOTE_REPO_PWD##
+#
+cdp_cluster_name=##CDP_CLUSTER_NAME##
+cloudera_manager_protocol=http
+cloudera_manager_host=localhost
+cloudera_manager_port=7180
+#
+cloudera_manager_api_user=##CLOUDERA_MANAGER_API_USER##
+cloudera_manager_api_password=##CLOUDERA_MANAGER_API_PASSWORD##
+#
+ldap_url=##LDAP_URL##
+ldap_bind_dn=##LDAP_BIND_DN##
+ldap_bind_pw=##LDAP_BIND_PW##
+ldap_user_search_base=##LDAP_USER_SEARCH_BASE##
+ldap_user_search_filter=##LDAP_USER_SEARCH_FILTER##
+ldap_group_search_base=##LDAP_GROUP_SEARCH_BASE##
+ldap_group_search_filter=##LDAP_GROUP_SEARCH_FILTER##
+#
+hue_user_filter=##HUE_USER_FILTER##
+hue_user_name_attr=##HUE_USER_NAME_ATTR##
+hue_group_filter=##HUE_GROUP_FILTER##
+hue_group_name_attr=##HUE_GROUP_NAME_ATTR##
+hue_group_member_attr=##HUE_GROUP_MEMBER_ATTR##
+hue_test_ldap_user=##HUE_TEST_LDAP_USER##
+hue_test_ldap_group=##HUE_TEST_LDAP_GROUP##
+
+# ECS hosts variables
+ecs_docker_storage_device=##ECS_DOCKER_STORAGE_DEVICE##
+ecs_storage_device=##ECS_STORAGE_DEVICE##
+scm_cert_password=##SCM_CERT_PASSWORD##
+
+#############
+# Instances #
+#############
+[infra_host]
+infra   ansible_host=##INFRA_IP##   fqdn=infra.##DOMAIN##
+
+[cdp_host]
+cdp     ansible_host=##CDP_IP##   fqdn=cdp.##DOMAIN##
+
+[ecs_hosts]

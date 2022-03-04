@@ -1,0 +1,11 @@
+# restart the cdp cluster
+
+# curl -v -X POST -H "Content-Type:application/json" -u admin:admin http://localhost:7180/api/v44/clusters/WWBank/commands/restart
+- name: "Restarting the CDP cluster.."
+  cm_api:
+    endpoint: /clusters/{{ cdp_cluster_name }}/commands/restart
+    method: POST
+    body:
+      password: "{{ cloudera_manager_admin_password }}"
+  when: cloudera_manager_admin_password is defined
+

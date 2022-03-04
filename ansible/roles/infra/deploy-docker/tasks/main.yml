@@ -1,0 +1,61 @@
+---
+
+# Setup docker storage
+- include: docker-storage-overlay2.yml
+
+
+- name: "Install libselinux-python to allow file copy"
+  yum:
+    name: libselinux-python
+    state: present
+
+- name: "Add Docker yum repo"
+  template:
+    src: docker-ce.repo.j2
+    dest: /etc/yum.repos.d/docker-ce.repo
+    owner: root
+    group: root
+
+
+# Add GPG key to rpm database
+- name: "Add docker GPG key to RPM database"
+  rpm_key:
+    state: present
+    key: "https://download.docker.com/linux/centos/gpg"
+
+# Install docker-ee package
+- name: "Install container-selinux package"
+  yum:
+    name: container-selinux
+    update_cache: yes
+    state: installed
+
+- name: "Install Docker package"
+  yum:
+    name: docker-ce
+    update_cache: yes
+    state: installed
+
+- name: "Ensure /etc/docker dir exists"
+  file:
+    path: /etc/docker
+    state: directory
+
+# Configure any daemon options
+- name: "Configure Docker engine for overlay2 graph storage"
+  copy:
+    src: daemon-overlay2.json
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+
+- name: "Ensure docker engine is started"
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: "Add centos user to docker group"
+  user: name=centos groups=docker append=yes
+
+

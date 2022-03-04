@@ -1,0 +1,33 @@
+---
+
+- name: "Push load-hive-data.sh script to host"
+  template:
+    src: load-hive-data.sh.j2
+    dest: /root/load-hive-data.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Push create-table-prescribing_data_ext.sql to host"
+  template:
+    src: create-table-prescribing_data_ext.sql
+    dest: /root/create-table-prescribing_data_ext.sql
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "Push load-table-prescribing_data_ext.sql to host"
+  template:
+    src: load-table-prescribing_data_ext.sql
+    dest: /root/load-table-prescribing_data_ext.sql
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "Load hive data"
+  shell: "/root/load-hive-data.sh 2>&1 | /bin/tee -a /root/load-hive-data.log"
+  args: 
+    executable: /bin/sh
+    chdir: /root
+    creates: /root/load-hive-data.log
+

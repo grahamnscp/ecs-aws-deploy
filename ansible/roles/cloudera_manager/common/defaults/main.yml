@@ -1,0 +1,11 @@
+---
+cloudera_manager_agent_config_file: /etc/cloudera-scm-agent/config.ini
+cloudera_manager_protocol: http
+cloudera_manager_host: "{{ groups.cloudera_manager | first | default('localhost') }}"
+cloudera_manager_port: 7180
+cloudera_manager_database_embedded: False
+cloudera_manager_database_host: "{{ database_host }}"
+cloudera_manager_database_type: "{{ database_type }}"
+cloudera_manager_database_name: scm
+cloudera_manager_database_user: scm
+cloudera_manager_database_password: changeme

@@ -1,0 +1,72 @@
+---
+
+- name: "Install epel-release"
+  yum:
+    name: epel-release
+    update_cache: yes
+    state: installed
+
+- name: "Installing os packages for ipa.."
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - vim
+    - cowsay
+    - figlet
+    - ipa-server
+    - rng-tools
+
+- name: "Checking nss-tools package is the latest"
+  yum:
+    name: nss-tools
+    state: latest
+
+#- name: "Restart dbus service"
+#  ansible.builtin.systemd:
+#    state: restarted
+#    daemon_reload: yes
+#    name: dbus
+
+
+- name: "Push deploy-ipa.sh script to host"
+  template:
+    src: deploy-ipa.sh.j2
+    dest: /root/deploy-ipa.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Deploy IPA"
+  shell: "/root/deploy-ipa.sh 2>&1 | /bin/tee -a /root/deploy-ipa.log"
+  args: 
+    executable: /bin/sh
+    chdir: /root
+    creates: /root/deploy-ipa.log
+
+- name: "Open firewall ports in iptables (tcp)"
+  ansible.builtin.iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_ports:
+      - "53"
+      - "80"
+      - "443"
+      - "8443"
+      - "389"
+      - "689"
+      - "88"
+      - "464"
+    jump: ACCEPT
+
+- name: "Open firewall ports in iptables (udp)"
+  ansible.builtin.iptables:
+    chain: INPUT
+    protocol: udp
+    destination_ports:
+      - "123"
+      - "53"
+      - "88"
+      - "464"
+    jump: ACCEPT
+

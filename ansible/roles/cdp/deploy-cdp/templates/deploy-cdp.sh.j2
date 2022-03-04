@@ -1,0 +1,11 @@
+#!/bin/bash
+
+cd /root/resources
+bash -x ./setup.sh aws centos {{ centos_password }} {{ cdp_cluster_template }} {{ cdp_cdsw_block_device }}
+RET_VAL=$?
+
+#sleep 300
+
+echo RET_VAL=$RET_VAL
+exit $RET_VAL
+

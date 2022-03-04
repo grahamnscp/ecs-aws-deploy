@@ -1,0 +1,21 @@
+
+NAME_PREFIX=myecs
+
+TAG_OWNER="me"
+TAG_PURPOSE="infra devtest"
+TAG_ENDDATE="DDMMYYYY"
+
+AWS_KEY_PAIR_NAME="myawskeypair"
+MY_SSH_PRIVATE_KEY_FILE="~\/.ssh\/mylocalkeypair"
+
+IP_CIDR_ME="XXX.XXX.XXX.XXX\/32"
+IP_CIDR_ME_VPN="XXX.XXX.XXX.XXX\/32"
+IP_CIDR_OTHER="XXX.XXX.XXX.XXX/32"
+
+CENTOS_PASSWORD=centospasswordvalue
+
+DOCKERHUB_USER=mydockerhubid
+
+CLOUDERA_MANAGER_LICENSE_FILE="~\/licenses\/my_2021_2022_Licenseinfo\/my_2021_2022_cloudera_license.txt"
+CDP_REMOTE_REPO_USR=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+CDP_REMOTE_REPO_PWD=xxxxxxxxxxxx

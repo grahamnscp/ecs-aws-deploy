@@ -1,0 +1,62 @@
+---
+
+- name: "Install epel-release"
+  yum:
+    name: epel-release
+    update_cache: yes
+    state: installed
+
+- name: "Install e2ai os packages.."
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - vim
+    - wget
+    - curl
+    - git
+    - bind-utils
+    - centos-release-scl
+    - make
+    - gcc-c++
+    - rng-tools
+    - httpd
+    - sysstat
+    - strace
+    - iotop
+    - lsof
+
+- name: "Install e2ai os packages cont.."
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - redis
+    - jq
+    - transmission-cli
+    - mosquitto
+    - shellinabox
+    - figlet
+    - cowsay
+    - cyrus-sasl-md5
+    - cyrus-sasl-plain
+    - cyrus-sasl-gssapi
+    - cyrus-sasl-devel
+
+# nodejs includes npm
+- name: "Check if nodesource repo already exists"
+  stat: path=/etc/yum.repos.d/nodesource-el7.repo
+  ignore_errors: true
+  register: nodesrcrepo
+
+- name: "Add nodesource repo"
+  shell: "curl -sL https://rpm.nodesource.com/setup_10.x | sudo bash -"
+  when: nodesrcrepo.stat.exists == false
+  
+- name: "Install e2ai os packages nodejs/npm.."
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - nodejs
+

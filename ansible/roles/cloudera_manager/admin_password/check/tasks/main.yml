@@ -1,0 +1,21 @@
+---
+
+- name: Check the default Cloudera Manager admin password
+  uri:
+    url: "{{ cloudera_manager_protocol }}://{{ cloudera_manager_host }}:{{ cloudera_manager_port }}/api/v2/tools/echo"
+    validate_certs: "{{ cloudera_manager_tls_validate_certs }}"
+    url_username: "admin"
+    url_password: "admin"
+    force_basic_auth: yes
+  register: default_admin_password_check
+  failed_when: default_admin_password_check.status not in [200, 401]
+  run_once: True
+  when: cloudera_manager_admin_password is defined
+
+- name: Set the playbook to use the non-default Cloudera Manager admin password
+  set_fact:
+    cloudera_manager_api_password: "{{ cloudera_manager_admin_password }}"
+  run_once: True
+  when:
+    - cloudera_manager_admin_password is defined
+    - default_admin_password_check.status == 401

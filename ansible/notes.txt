@@ -1,0 +1,5 @@
+
+time ansible-playbook -i hosts site.yml
+
+open http://cdp.gecs.cloudera-field.net:7180
+

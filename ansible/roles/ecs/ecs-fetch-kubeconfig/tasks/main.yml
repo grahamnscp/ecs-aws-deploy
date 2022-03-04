@@ -1,0 +1,59 @@
+---
+
+# make kubectl directory
+#- name: make local kubectl directory
+#  file:
+#    path: working-files/kubecfg
+#    state: directory 
+#  delegate_to: localhost
+
+
+# fetch cluster files
+- name: "Check if kubeconfig file exists on this host"
+  stat: path=/var/lib/rancher/rke2/server/cred/admin.kubeconfig
+  ignore_errors: true
+  register: kubeconfig
+
+- name: "Fetch the admin kubeconfig file"
+  fetch:
+    src: /var/lib/rancher/rke2/server/cred/admin.kubeconfig
+    dest: working-files/kubecfg/admin-kubeconfig.yaml
+    flat: yes
+  when: kubeconfig.stat.exists == true
+
+- name: "Check if /var/lib/rancher/rke2/server/tls/server-ca.crt file exists"
+  stat: path=/var/lib/rancher/rke2/server/tls/server-ca.crt
+  ignore_errors: true
+  register: rke2cacert
+
+- name: "Fetch the rancher server ca cert file"
+  fetch:
+    src: /var/lib/rancher/rke2/server/tls/server-ca.crt
+    dest: working-files/kubecfg/rancher-server-ca.crt
+    flat: yes
+  when: rke2cacert.stat.exists == true
+
+- name: "Check if /var/lib/rancher/rke2/server/tls/client-admin.crt file exists"
+  stat: path=/var/lib/rancher/rke2/server/tls/client-admin.crt
+  ignore_errors: true
+  register: rke2clientcrt
+
+- name: "Fetch the rancher client admin cert file"
+  fetch:
+    src: /var/lib/rancher/rke2/server/tls/client-admin.crt
+    dest: working-files/kubecfg/client-admin.crt
+    flat: yes
+  when: rke2clientcrt.stat.exists == true
+
+- name: "Check if /var/lib/rancher/rke2/server/tls/client-admin.key file exists"
+  stat: path=/var/lib/rancher/rke2/server/tls/client-admin.key
+  ignore_errors: true
+  register: rke2clientkey
+
+- name: "Fetch the rancher client admin cert key file"
+  fetch:
+    src: /var/lib/rancher/rke2/server/tls/client-admin.key
+    dest: working-files/kubecfg/client-admin.key
+    flat: yes
+  when: rke2clientkey.stat.exists == true
+

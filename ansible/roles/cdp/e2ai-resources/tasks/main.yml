@@ -1,0 +1,92 @@
+---
+
+- name: "Push edge2ai resources tar to host"
+  copy:
+    src: working-files/resources.tar.gz
+    dest: /root/resources.tar.gz
+
+- name: "Unpack resources tar"
+  shell: tar -xvf resources.tar.gz 2>&1 | /bin/tee -a /root/shell-unpack-tar.log
+  args:
+    executable: /bin/sh
+    chdir: /root
+    creates: /root/shell-unpack-tar.log
+
+- name: "Overwrite setup.sh from local file"
+  copy:
+    src: working-files/setup.sh
+    dest: /root/resources/setup.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Overwrite common.sh from local file"
+  copy:
+    src: working-files/common.sh
+    dest: /root/resources/common.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Overwrite create_cluster.py from local file"
+  copy:
+    src: working-files/create_cluster.py
+    dest: /root/resources/create_cluster.py
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "Push edge2ai lab docs to web server docroot"
+  copy:
+    src: working-files/e2ai-labs.tar.gz
+    dest: /root/e2ai-labs.tar.gz
+
+- name: "Ensure docroot labs directory exists"
+  file:
+    path: /var/www/html/labs
+    state: directory
+
+- name: "unpack labs tar"
+  shell: tar -xvf /root/e2ai-labs.tar.gz 2>&1 | /bin/tee -a /root/shell-unpack-labs-tar.log
+  args:
+    executable: /bin/sh
+    chdir: /var/www/html/labs
+    creates: /root/shell-unpack-labs-tar.log
+
+- name: "chown / restorecon docroot labs"
+  shell: chown -R +r /var/www/html/labs ; restorecon -Rv /var/www/html/labs >> /root/shell-unpack-labs-tar.log
+  args:
+    executable: /bin/sh
+
+- name: "Generate stack.cdp716p.sh"
+  template:
+    src: working-files/stack.cdp716p.sh.j2
+    dest: /root/resources/stack.cdp716p.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Generate stack.cdp717ps.sh"
+  template:
+    src: working-files/stack.cdp717ps.sh.j2
+    dest: /root/resources/stack.cdp717ps.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Generate stack.cdp717s.sh"
+  template:
+    src: working-files/stack.cdp717s.sh.j2
+    dest: /root/resources/stack.cdp717s.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Generate stack.cdp717ps-spark3.sh"
+  template:
+    src: working-files/stack.cdp717ps-spark3.sh.j2
+    dest: /root/resources/stack.cdp717ps-spark3.sh
+    owner: root
+    group: root
+    mode: 0755
+

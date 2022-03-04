@@ -1,0 +1,109 @@
+# Global Variables:
+
+variable "name_prefix" {
+  default = "##NAME_PREFIX##"
+}
+
+# hosted zone:
+variable "route53_domainname" {
+  default = "##ROUTE53_DOMAINNAME##"
+}
+variable "route53_zone_id" {
+  default = "##ROUTE53_ZONE_ID##"
+}
+
+# tags:
+variable "tag_owner" {
+  default = "##TAG_OWNER##"
+}
+# instance tags
+variable "tag_purpose" {
+  default = "##TAG_PURPOSE##"
+}
+variable "tag_enddate" {
+  default = "##TAG_ENDDATE##"
+}
+
+# provider:
+variable "aws_region" {
+  default = "##AWS_REGION##"
+}
+variable "aws_key_pair_name" {
+  default = "##AWS_KEY_PAIR_NAME##"
+}
+
+# security group source ips:
+variable "ip_cidr_me" {
+  default = "##IP_CIDR_ME##"
+}
+variable "ip_cidr_me_vpn" {
+  default = "##IP_CIDR_ME_VPN##"
+}
+variable "ip_cidr_other" {
+  default = "##IP_CIDR_OTHER##"
+}
+
+# instances:
+variable "aws_ami" {
+  default = "##AWS_AMI##"
+}
+variable "aws_instance_type_infra" {
+  default = "##AWS_INSTANCE_TYPE_INFRA##"
+}
+variable "aws_instance_type_cdp" {
+  default = "##AWS_INSTANCE_TYPE_CDP##"
+}
+variable "aws_instance_type_ecs" {
+  default = "##AWS_INSTANCE_TYPE_ECS##"
+}
+variable "infra_root_volume_size" {
+  default = "##INFRA_ROOT_VOLUME_SIZE##"
+}
+variable "infra_docker_volume_size" {
+  default = "##INFRA_DOCKER_VOLUME_SIZE##"
+}
+variable "cdp_root_volume_size" {
+  default = "##CDP_ROOT_VOLUME_SIZE##"
+}
+variable "cdp_cdsw_volume_size" {
+  default = "##CDP_CDSW_VOLUME_SIZE##"
+}
+variable "ecs_root_volume_size" {
+  default = "##ECS_ROOT_VOLUME_SIZE##"
+}
+variable "ecs_docker_volume_size" {
+  default = "##ECS_DOCKER_VOLUME_SIZE##"
+}
+variable "ecs_pv_volume_size" {
+  default = "##ECS_PV_VOLUME_SIZE##"
+}
+variable "ecs_node_count" {
+  default = "##ECS_NODE_COUNT##"
+}
+
+# vpc:
+variable "dnsSupport" {
+  default = true
+}
+variable "dnsHostNames" {
+  default = true
+}
+variable "vpcCIDRblock" {
+  default = "##VPCCIDRBLOCK##"
+}
+variable "subnetCIDRblock" {
+  default = "##SUBNETCIDRBLOCK##"
+}
+variable "destinationCIDRblock" {
+  default = "0.0.0.0/0"
+}
+variable "ingressCIDRblock" {
+  default = [ "0.0.0.0/0" ]
+}
+variable "mapPublicIP" {
+  default = true
+}
+variable "instanceTenancy" {
+  default = "default"
+}
+

@@ -1,0 +1,22 @@
+---
+
+- name: "Install lvm package"
+  yum:
+    name: lvm2
+    state: present
+
+- name: "Creating ecs storage script.."
+  template:
+    src: create-ecs-lvm.j2
+    dest: /root/create-ecs-lvm.sh
+    owner: root
+    group: root
+    mode: 755
+
+- name: "Creating ecs storage mount.."
+  shell: /root/create-ecs-lvm.sh 2>&1 | /bin/tee -a /root/create-ecs-lvm.log
+  args:
+    executable: /bin/sh
+    chdir: /root
+    creates: /root/create-ecs-lvm.log
+

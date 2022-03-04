@@ -1,0 +1,11 @@
+---
+
+- name: "Config resolv.conf"
+  copy:
+    src: working-files/resolv.conf
+    dest: /etc/resolv.conf
+    owner: root
+    group: root
+
+- name: "Make resolv.conf immutable from reboot dhcp"
+  shell: "chattr +i /etc/resolv.conf"

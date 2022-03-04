@@ -1,0 +1,22 @@
+# Reconfigure Hue auth to add PAM
+
+#PUT /api/v31/clusters/OneNodeCluster/services/hue/config
+#{
+#  "items": [
+#    {
+#      "name": "auth_backend",
+#      "value": "desktop.auth.backend.PamBackend,desktop.auth.backend.AllowFirstUserDjangoBackend"
+#    }
+#  ]
+#}
+- name: "Configure Hue PAM auth"
+  cm_api:
+    endpoint: /clusters/{{ cdp_cluster_name }}/services/hue/config
+    method: PUT
+    body: '{ "items": [ { "name": "auth_backend", "value": "desktop.auth.backend.PamBackend,desktop.auth.backend.AllowFirstUserDjangoBackend" } ] }'
+
+- name: "Restart Hue Service"
+  cm_api:
+    endpoint: /clusters/{{ cdp_cluster_name }}/services/hue/commands/restart
+    method: POST
+    status_code: [200, 400]

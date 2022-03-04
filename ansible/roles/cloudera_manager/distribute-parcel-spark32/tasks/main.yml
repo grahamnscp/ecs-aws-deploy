@@ -1,0 +1,8 @@
+# Distribute the SPARK3 parcel
+
+# curl --insecure -v -X POST  -H "Content-Type:application/json" -u admin:adminpwd https://localhost:7183/api/v44/clusters/OneNodeCluster/parcels/products/SPARK3/versions/3.2.0.3.2.7170.0-49-1.p0.18822714/commands/startDistribution
+- name: "Distribute SPARK3 parcel"
+  cm_api:
+    endpoint: /clusters/{{ cdp_cluster_name }}/parcels/products/SPARK3/versions/{{ spark3_parcel_version }}/commands/startDistribution
+    method: POST
+    status_code: [200, 400]

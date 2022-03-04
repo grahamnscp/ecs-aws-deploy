@@ -1,0 +1,23 @@
+$ORIGIN ##DOMAIN##.
+$TTL 1M
+@     IN SOA  @ infra.##DOMAIN##. (
+    		10     ; serial
+                1M    ; refresh
+                1H    ; retry
+                1D    ; expire
+                1M )  ; minimum
+;
+;
+       NS  infra.##DOMAIN##.
+;
+   IN  MX 10 infra.##DOMAIN##.
+;
+infra             IN      A     ##INFRA_IP_NUM##
+cdp               IN      A     ##CDP_IP_NUM##
+;
+console_cp        IN      A     ##ECSX_IP_NUM##
+kube-dashboard    IN      A     ##ECSX_IP_NUM##
+prometheus        IN      A     ##ECSX_IP_NUM##
+infra-prometheus  IN      A     ##ECSX_IP_NUM##
+*                 IN      A     ##ECSX_IP_NUM##
+;

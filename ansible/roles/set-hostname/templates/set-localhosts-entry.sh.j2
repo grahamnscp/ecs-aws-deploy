@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Need the internal IP address in the localhosts file to get round security group
+INTERNAL_IP=`ip a| grep inet | egrep -v 'inet6|127.0.0.1' | awk '{print $2}' | awk 'BEGIN {FS = "/"}{print $1}'`
+HOSTNAME=`hostname -f`
+
+grep -qF "$INTERNAL_IP" /etc/hosts || echo "$INTERNAL_IP  $HOSTNAME " >> /etc/hosts
+exit $?

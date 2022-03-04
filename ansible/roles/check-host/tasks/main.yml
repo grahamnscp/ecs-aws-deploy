@@ -1,0 +1,21 @@
+---
+
+- debug:
+   msg: "THIS HOST: {{ inventory_hostname }} fqdn={{ fqdn }}, ip={{ ansible_host }}"
+
+- name: "Install deltarpm package"
+  yum:
+    name: deltarpm
+    update_cache: yes
+    state: installed
+
+- name: "Install useful os packages.."
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - iproute
+    - net-tools
+    - bind-utils
+    - mlocate 
+    - ipa-client

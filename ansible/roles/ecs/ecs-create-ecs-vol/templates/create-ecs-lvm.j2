@@ -1,0 +1,10 @@
+#!/bin/sh
+
+/usr/sbin/pvcreate {{ ecs_storage_device }}
+/usr/sbin/vgcreate ecs_vg {{ ecs_storage_device }}
+/usr/sbin/lvcreate --wipesignatures y -n ecs -l 95%VG ecs_vg
+/sbin/mkfs.xfs -n ftype=1 /dev/ecs_vg/ecs
+mkdir -p /ecs
+grep -q -F 'ecs' /etc/fstab || echo '/dev/ecs_vg/ecs /ecs xfs defaults 0 0' >> /etc/fstab
+mount /ecs
+/sbin/restorecon -Rv /ecs

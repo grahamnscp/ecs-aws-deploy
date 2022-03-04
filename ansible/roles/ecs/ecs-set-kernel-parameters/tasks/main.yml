@@ -1,0 +1,22 @@
+---
+
+- name: "Push set-kernel-parameters.sh script to host"
+  template:
+    src: set-kernel-parameters.sh.j2
+    dest: /root/set-kernel-parameters.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Set kernel parameters"
+  shell: "/root/set-kernel-parameters.sh 2>&1 | /bin/tee -a /root/set-kernel-parameters.log"
+  args:
+    executable: /bin/sh
+    chdir: /root
+    creates: /root/set-kernel-parameters.log
+
+
+- name: "raise non-root nproc soft limit of 4096 to 32768 in 20-nproc.conf"
+  shell: sed -i 's/4096/32768/' /etc/security/limits.d/20-nproc.conf
+
+# note centos 7.9 has default: fs.file-max = 12527377

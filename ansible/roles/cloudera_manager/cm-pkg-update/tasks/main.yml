@@ -1,0 +1,24 @@
+# Update cloudera-manager packages
+
+- name: "Updating cloudera-manager packages "
+  yum:
+    name: 'cloudera-manager-*'
+    state: latest
+  register: cmupdating
+
+- name: "pause for update to complete.."
+  pause: seconds=120
+  when: cmupdating is changed
+
+- name: "Restart cloudera-scm-server"
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: cloudera-scm-server
+
+- name: "Restart cloudera-scm-agent"
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: cloudera-scm-agent
+

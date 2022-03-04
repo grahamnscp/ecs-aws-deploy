@@ -1,0 +1,34 @@
+---
+
+- name: "Install epel-release"
+  yum:
+    name: epel-release
+    update_cache: yes
+    state: installed
+
+- name: "Install ecs os packages.."
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - vim
+    - wget
+    - curl
+    - bind-utils
+    - jq
+    - transmission-cli
+    - sysstat
+    - strace
+    - iotop
+    - lsof
+    - qemu-img
+    - libselinux-python
+    - java-11-openjdk
+    - java-11-openjdk-devel
+    - java-11-openjdk-headless
+    - krb5-workstation
+    - krb5-libs
+    - pam_krb5
+    - sssd-krb5
+
+#    - java-1.8.0-openjdk

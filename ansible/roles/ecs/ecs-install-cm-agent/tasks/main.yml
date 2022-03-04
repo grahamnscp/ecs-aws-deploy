@@ -1,0 +1,24 @@
+---
+- name: "Check if cloudera-manager-local.repo file already exists?"
+  stat: path=/etc/yum.repos.d/cloudera-manager-local.repo
+  ignore_errors: true
+  register: repofile
+
+#- debug: var=repofile
+
+- name: "Add local Cloudera Manager repo"
+  template:
+    src: cloudera-manager-local.repo.j2
+    dest: /etc/yum.repos.d/cloudera-manager-local.repo
+    owner: root
+    group: root
+  when: repofile.stat.exists == false
+
+- name: "Install package: cloudera-manager-agent"
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - cloudera-manager-agent
+
+

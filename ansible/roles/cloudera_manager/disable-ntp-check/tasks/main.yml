@@ -1,0 +1,17 @@
+# Disable the CDSW health check as cannot see pods for some reason but they are running okay
+
+#PUT /api/v31/cm/allHosts/config
+#{
+#  "items": [
+#    {
+#      "name": "host_clock_offset_thresholds",
+#      "value": "{\"warning\":3000,\"critical\":10000}"
+#    }
+#  ]
+#}
+- name: "Disable ntp Health Check"
+  cm_api:
+    endpoint: /cm/allHosts/config
+    method: PUT
+    body: '{ "items": [ { "name": "host_clock_offset_thresholds", "value": "{\"warning\":NEVER,\"critical\":NEVER}" } ] }'
+

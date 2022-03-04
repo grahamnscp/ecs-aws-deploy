@@ -1,0 +1,17 @@
+# Create some test users for use with various things
+
+- name: "Create test users - push script"
+  copy:
+    src: working-files/create-test-users.sh
+    dest: /root/resources/create-test-users.sh
+    owner: root
+    group: root
+    mode: 0755  
+
+- name: "Create test users:"
+  shell: "/root/resources/create-test-users.sh 2>&1 | /bin/tee -a /root/resources/create-test-users.log"
+  args:
+    executable: /bin/sh
+    chdir: /root
+    creates: /root/resources/create-test-users.log
+

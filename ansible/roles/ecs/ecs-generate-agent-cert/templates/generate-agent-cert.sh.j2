@@ -1,0 +1,171 @@
+#!/bin/bash
+
+THE_PWD={{ scm_cert_password }}
+
+# CA details
+SEC_BASE=/opt/cloudera/security
+export CA_DIR=${SEC_BASE}/ca
+export CA_PWD=${THE_PWD}
+export CA_CONF=$CA_DIR/openssl.cnf
+export ROOT_PEM=$CA_DIR/ca-cert.pem
+
+# Host cert details
+export KEY_PEM=${SEC_BASE}/x509/key.pem
+export UNENCRYTED_KEY_PEM=${SEC_BASE}/x509/unencrypted-key.pem
+export CSR_PEM=${SEC_BASE}/x509/host.csr
+export HOST_PEM=${SEC_BASE}/x509/host.pem
+export CERT_PEM=${SEC_BASE}/x509/cert.pem
+export KEY_PWD=${THE_PWD}
+export KEYSTORE_JKS=${SEC_BASE}/jks/keystore.jks
+export KEYSTORE_PWD=$KEY_PWD
+export TRUSTSTORE_PEM=${SEC_BASE}/x509/truststore.pem
+export TRUSTSTORE_JKS=${SEC_BASE}/jks/truststore.jks
+export TRUSTSTORE_PWD=${THE_PWD}
+
+# Functions
+function create_certs() {
+  local this_host=$1
+
+  mkdir -p $(dirname $KEY_PEM) $(dirname $CSR_PEM) $(dirname $HOST_PEM) ${SEC_BASE}/jks
+
+  # Create private key
+  openssl genrsa -des3 -out ${KEY_PEM} -passout pass:${KEY_PWD} 2048
+
+  # Create CSR
+  local public_ip=$(curl -s http://ifconfig.me || curl -s http://api.ipify.org/)
+  #local private_ip=`dig $this_host | grep internal | tail -1 | awk '{print $5}'`
+  local private_ip=`host $this_host | awk '{print $4}'`
+
+  export ALT_NAMES="DNS:$this_host,DNS:${private_ip},DNS:$(hostname -f),DNS:*.${public_ip}.nip.io,DNS:$public_ip"
+
+  # Create cert
+  openssl req\
+    -new\
+    -key ${KEY_PEM} \
+    -subj "/C=US/ST=California/L=San Francisco/O=Cloudera/OU=PS/CN=$(hostname)" \
+    -out ${CSR_PEM} \
+    -passin pass:${KEY_PWD} \
+    -config <( cat <<EOF
+[ req ]
+default_bits = 2048
+default_md = sha256
+distinguished_name = req_distinguished_name
+req_extensions = v3_user_req
+string_mask = utf8only
+
+[ req_distinguished_name ]
+countryName_default = XX
+countryName_min = 2
+countryName_max = 2
+localityName_default = Default City
+0.organizationName_default = Default Company Ltd
+commonName_max = 64
+emailAddress_max = 64
+
+[ v3_user_req ]
+basicConstraints = CA:FALSE
+subjectKeyIdentifier = hash
+keyUsage = digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth, clientAuth
+subjectAltName = $ALT_NAMES
+EOF
+  )
+
+  # Create an unencrypted version of the key (required for CDSW internal termination)
+  openssl rsa -in "$KEY_PEM" -passin pass:"$KEY_PWD" > "$UNENCRYTED_KEY_PEM"
+
+  # Sign cert
+  openssl ca \
+    -config ${CA_CONF} \
+    -in ${CSR_PEM} \
+    -key ${CA_PWD} \
+    -batch \
+    -extensions v3_user_extensions \
+    | openssl x509 > ${HOST_PEM}
+
+  # Create PEM truststore
+  rm -f $TRUSTSTORE_PEM
+  cp $ROOT_PEM $TRUSTSTORE_PEM
+
+  # Create PEM combined certificate
+  cp $HOST_PEM $CERT_PEM
+
+  # Generate JKS keystore
+  rm -f temp.p12
+
+  openssl pkcs12 -export \
+   -in $CERT_PEM \
+   -inkey <(openssl rsa -in $KEY_PEM -passin pass:$KEY_PWD) \
+   -out temp.p12 \
+   -passout pass:temptemptemp \
+   -name $(hostname)
+
+  rm -f $KEYSTORE_JKS
+  keytool \
+   -importkeystore \
+   -alias $(hostname) \
+   -srcstoretype PKCS12 \
+   -srckeystore temp.p12 \
+   -destkeystore $KEYSTORE_JKS \
+   -srcstorepass temptemptemp \
+   -deststorepass $KEYSTORE_PWD \
+   -destkeypass $KEYSTORE_PWD
+
+  rm -f temp.p12
+
+  # Generate JKS truststore
+  rm -f $TRUSTSTORE_JKS
+  for cert in $ROOT_PEM; do
+    if [[ -s $cert ]]; then
+      keytool \
+        -importcert \
+        -keystore $TRUSTSTORE_JKS \
+        -storepass $TRUSTSTORE_PWD \
+        -file $cert \
+        -alias $(basename $cert) \
+        -trustcacerts \
+        -no-prompt
+    fi
+  done
+
+  # Create agent password file
+  echo $KEY_PWD > ${SEC_BASE}/x509/pwfile
+  chown cloudera-scm:cloudera-scm ${SEC_BASE}/x509/pwfile
+  chmod 400 ${SEC_BASE}/x509/pwfile
+
+  # Set permissions
+  chown cloudera-scm:cloudera-scm $KEY_PEM $KEYSTORE_JKS $CERT_PEM $TRUSTSTORE_PEM $TRUSTSTORE_JKS
+  chmod 444 $KEY_PEM $UNENCRYTED_KEY_PEM $KEYSTORE_JKS
+  chmod 444 $CERT_PEM $TRUSTSTORE_PEM $TRUSTSTORE_JKS
+}
+
+
+# Main
+this_host=`hostname`
+echo generating certs for $this_host..
+
+create_certs $this_host
+
+exit
+
+
+CLUSTER_HOST=##CDP_HOSTNAME##
+
+# Reconfigure agent
+if [[ ! -f /etc/cloudera-scm-agent/config.ini.orig.$$ ]]; then
+  cp /etc/cloudera-scm-agent/config.ini /etc/cloudera-scm-agent/config.ini.orig.$$
+fi
+sed -i.bak \
+"s%^[# ]*server_host=.*%server_host=${CLUSTER_HOST}%"\
+   /etc/cloudera-scm-agent/config.ini
+if [ "$(is_tls_enabled)" == "yes" ]; then
+  sed -i.bak \
+'s%^[# ]*use_tls=.*%use_tls=1%;'\
+'s%^[# ]*verify_cert_file=.*%verify_cert_file=/opt/cloudera/security/x509/truststore.pem%;'\
+'s%^[# ]*client_key_file=.*%client_key_file=/opt/cloudera/security/x509/key.pem%;'\
+'s%^[# ]*client_keypw_file=.*%client_keypw_file=/opt/cloudera/security/x509/pwfile%;'\
+'s%^[# ]*client_cert_file=.*%client_cert_file=/opt/cloudera/security/x509/cert.pem%'\
+     /etc/cloudera-scm-agent/config.ini
+fi
+
+

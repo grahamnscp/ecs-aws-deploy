@@ -1,0 +1,17 @@
+---
+
+- debug:
+   msg: "THIS HOST: {{ inventory_hostname }}: {{ ansible_host }}  ecsX.{{ name_prefix }}.{{ route53_domainname }}"
+
+- name: "Copy back the generated ssh key file for use in other playbooks"
+  fetch:
+    src: /root/resources/myRSAkey
+    dest: working-files/myRSAkey
+    flat: yes
+
+- name: "Copy back the generated ssh pub key file for use in other playbooks"
+  fetch:
+    src: /root/resources/myRSAkey.pub
+    dest: working-files/myRSAkey.pub
+    flat: yes
+

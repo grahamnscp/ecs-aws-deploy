@@ -1,0 +1,25 @@
+---
+
+- name: "Prepare bind-docker installation script.."
+  template:
+    src: deploy-bind-docker.sh.j2
+    dest: /root/deploy-bind-docker.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Start bind-docker container instance.."
+  shell: "/root/deploy-bind-docker.sh 2>&1 | /bin/tee -a /root/deploy-bind-docker.log"
+  args:
+    executable: /bin/sh
+    chdir: /root
+    creates: /root/deploy-bind-docker.log
+
+- name: "Copy restart-dns.sh script to host"
+  template:
+    src: restart-dns.sh.j2
+    dest: /root/restart-dns.sh
+    owner: root
+    group: root
+    mode: 0755
+

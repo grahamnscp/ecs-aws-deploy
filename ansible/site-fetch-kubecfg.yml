@@ -1,0 +1,5 @@
+---
+
+- hosts: ecs1
+  roles:
+  - ecs/ecs-fetch-kubeconfig

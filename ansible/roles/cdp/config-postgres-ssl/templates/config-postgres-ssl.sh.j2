@@ -1,0 +1,20 @@
+#!/bin/bash
+
+echo "Configuring PostgreSQL for SSL.."
+
+cp /opt/cloudera/security/ca/ca-cert.pem /var/lib/pgsql/10/data/root.crt
+cp /opt/cloudera/security/x509/host.pem /var/lib/pgsql/10/data/server.crt
+cp /opt/cloudera/security/x509/unencrypted-key.pem /var/lib/pgsql/10/data/server.key
+
+chown postgres:postgres /var/lib/pgsql/10/data/{root.crt,server.*}
+chmod 600  /var/lib/pgsql/10/data/{root.crt,server.*}
+
+# enable ssl (rest of config done in main.yml)
+sed -i 's/^#ssl = off/ssl = on/g' /var/lib/pgsql/10/data/postgresql.conf
+#echo "ssl = on" >> /var/lib/pgsql/10/data/postgresql.conf
+
+# Open postgresql access for private subnet access
+echo "host all all {{ private_subnet }}/24 md5" >> /var/lib/pgsql/10/data/pg_hba.conf
+
+echo "Completed: config-postgres-ssl.sh"
+

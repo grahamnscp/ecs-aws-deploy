@@ -1,0 +1,14 @@
+---
+
+- name: "Copy CDP ssh pub key to ecs hosts"
+  copy:
+    src: working-files/myRSAkey.pub
+    dest: /root/myRSAkey.pub
+    owner: root
+    group: root
+
+- name: "Add CDP ssh pub key to centos authorized_keys"
+  shell: grep -qF "cdp" /home/centos/.ssh/authorized_keys || cat /root/myRSAkey.pub >> /home/centos/.ssh/authorized_keys
+  args:
+    executable: /bin/sh
+

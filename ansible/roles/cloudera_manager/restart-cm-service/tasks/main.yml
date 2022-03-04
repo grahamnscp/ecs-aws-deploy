@@ -1,0 +1,20 @@
+---
+
+- stat: path=/root/cm-restarted
+  register: cm_restarted
+
+- name: Restart Cloudera Manager server
+  service:
+    name: cloudera-scm-server
+    state: restarted
+  become: yes
+  when: cm_restarted.stat.exists == False
+  notify:
+    - wait cloudera-scm-server
+
+- name: "create cm-restarted flag file"
+  shell: "touch /root/cm-restarted"
+  args:
+    executable: /bin/sh
+    chdir: /root
+    creates: /root/cm-restarted

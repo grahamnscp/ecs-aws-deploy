@@ -1,0 +1,57 @@
+---
+
+- hosts: infra_host cdp_host ecs_hosts
+  roles:
+  - check-host
+  - sshd-keepalive
+  - set-hostname
+  - set-centos-pwd
+  - sshd-pwdauth
+
+- hosts: infra_host
+  roles:
+  - ntp-server
+  - infra/deploy-docker
+  - infra/deploy-bind-docker
+  - config-resolv-conf
+  - infra/deploy-ipa
+
+- hosts: cdp_host
+  roles:
+  - config-resolv-conf
+  - ntp-client
+  - cdp/e2ai-packages
+  - cdp/e2ai-resources
+  - cdp/deploy-cdp
+  - cdp/config-postgres-ssl
+  - cdp/create-os-users
+  - get-datetime
+  - pause-2-minutes
+  - cloudera_manager/api_client
+  - cloudera_manager/extend-cdp-session-timeout
+  - cloudera_manager/disable-cdsw-check
+  - cloudera_manager/disable-ntp-check
+  - cloudera_manager/update-license
+  - cloudera_manager/config-cm-ldap
+##  - cloudera_manager/distribute-parcel-spark32
+  - pause-2-minutes
+##  - cloudera_manager/activate-parcel-spark32
+  - cdp-ecs/fetch-cdp-ssh-key
+  - cdp-ecs/fetch-cdp-ca
+  - cdp-ecs/fetch-krb5conf
+  - cdp/load-hive-data
+
+- hosts: ecs_hosts
+  roles:
+  - config-resolv-conf
+  - ntp-client
+  - ecs/ecs-set-kernel-parameters
+  - ecs/ecs-add-cdp-ssh-key
+  - ecs/ecs-create-docker-vol
+  - ecs/ecs-create-ecs-vol
+  - ecs/ecs-node-packages
+  - ecs/ecs-config-krb5conf
+  - ecs/ecs-install-cm-agent
+  - ecs/ecs-generate-agent-cert
+  - ecs/ecs-scm-agent-ssl-config
+

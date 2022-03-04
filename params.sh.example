@@ -1,0 +1,114 @@
+# Params.sh
+
+#########################
+## Terraform variables ##
+#########################
+
+NAME_PREFIX=myecs
+
+# existing route53 hosted zone:
+ROUTE53_DOMAINNAME=cloudera-field.net
+ROUTE53_ZONE_ID=Z0857549WF2LU9I0PE9B
+
+# tags:
+TAG_OWNER="me"
+TAG_PURPOSE="infra devtest"
+TAG_ENDDATE="02112022"
+
+# aws:
+AWS_REGION="us-west-1"
+AWS_KEY_PAIR_NAME="myawskeypair"
+MY_SSH_PRIVATE_KEY_FILE="~\/.ssh\/mylocalkeypair"
+
+# security group ips:
+IP_CIDR_ME="XXX.XXX.XXX.XXX\/32"
+IP_CIDR_ME_VPN="XXX.XXX.XXX.XXX\/32"
+IP_CIDR_OTHER="XXX.XXX.XXX.XXX/32"
+
+# instances:
+#  aws ec2 describe-images --owners aws-marketplace --filters Name=product-code,Values=aw0evgkw8e5c1q413zgy5pjce --query 'Images[*].[CreationDate,Name,ImageId]' --filters "Name=name,Values=CentOS Linux 7*" --region us-west-1 --output table | sort -r
+#
+#  us-west-1 - CentOS Linux release 7.9.2009 (Core) ref: https://wiki.centos.org/Cloud/AWS
+AWS_AMI="ami-08d2d8b00f270d03b"
+#
+#m5.4xlarge	16 cpu   64G mem
+#r5.4xlarge	16 cpu	128G mem
+#r5.8xlarge	32 cpu	256G mem
+#r5.12xlarge	48 cpu	384G mem
+#r5.16xlarge	64 cpu	512G mem
+#
+AWS_INSTANCE_TYPE_INFRA=t2.medium
+#AWS_INSTANCE_TYPE_CDP=m5.4xlarge
+AWS_INSTANCE_TYPE_CDP=r5.4xlarge
+AWS_INSTANCE_TYPE_ECS=r5.4xlarge
+#
+INFRA_ROOT_VOLUME_SIZE=100
+INFRA_DOCKER_VOLUME_SIZE=53
+CDP_ROOT_VOLUME_SIZE=300
+CDP_CDSW_VOLUME_SIZE=300
+ECS_ROOT_VOLUME_SIZE=200
+ECS_DOCKER_VOLUME_SIZE=316
+ECS_PV_VOLUME_SIZE=1053
+ECS_NODE_COUNT=5
+
+# vpc:
+VPCCIDRBLOCK="172.12.0.0\/16"
+SUBNETCIDRBLOCK="172.12.1.0\/24"
+
+
+#######################
+## Ansible Variables ##
+#######################
+ADMIN_PASSWORD=supersecret1
+CENTOS_PASSWORD=centospasswordvalue
+#
+DOCKERHUB_USER=mydockerhubid
+BIND_DOCKER_TAG=$NAME_PREFIX
+#
+NTP_PRIVATE_SUBNET="172.12.1.0"
+# Extra volume device names, note names can change with different instance types
+DOCKER_STORAGE_DEVICE="\/dev\/xvdb"
+#CDP_CDSW_STORAGE_DEVICE="\/dev\/xvdb"
+CDP_CDSW_STORAGE_DEVICE="\/dev\/nvme1n1"
+#
+# Used by ECS playbooks:
+ECS_STORAGE_DEVICE="\/dev\/nvme1n1"
+ECS_DOCKER_STORAGE_DEVICE="\/dev\/nvme2n1"
+SCM_CERT_PASSWORD=$ADMIN_PASSWORD
+#
+CDP_CLUSTER_NAME=OneNodeCluster
+IPA_PASSWORD=$ADMIN_PASSWORD
+KRB_REALM=MYECS.COM
+IPA_REALM=$KRB_REALM
+CLOUDERA_MANAGER_API_USER=admin
+CLOUDERA_MANAGER_API_PASSWORD=$ADMIN_PASSWORD
+#CLOUDERA_MANAGER_VERSION=7.4.4
+CLOUDERA_MANAGER_VERSION=7.5.4
+#
+CLOUDERA_MANAGER_LICENSE_FILE="~\/licenses\/my_2021_2022_Licenseinfo\/my_2021_2022_cloudera_license.txt"
+CDP_REMOTE_REPO_USR=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+CDP_REMOTE_REPO_PWD=xxxxxxxxxxxx
+#
+#CDP_CLUSTER_TEMPLATE=cdp716p
+#CDP_CLUSTER_TEMPLATE=cdp717ps
+CDP_CLUSTER_TEMPLATE=cdp717ps-spark3
+SPARK3_PARCEL_VERSION=3.2.0.3.2.7170.0-49-1.p0.18822714
+#
+# Note: If you change the REALM, update the dc=myecs entries below:
+LDAP_DC=`echo $IPA_REALM |awk -F "." '{print $1}' |awk '{print tolower($0)}'`
+LDAP_URL="ldap:\/\/infra.${NAME_PREFIX}.$ROUTE53_DOMAINNAME\/"
+LDAP_BIND_DN="uid=ldap_bind_user,cn=users,cn=compat,dc=$LDAP_DC,dc=com"
+LDAP_BIND_PW=$ADMIN_PASSWORD
+LDAP_USER_SEARCH_BASE="cn=users,cn=compat,dc=$LDAP_DC,dc=com"
+LDAP_USER_SEARCH_FILTER="(uid={0})"
+LDAP_GROUP_SEARCH_BASE="cn=groups,cn=compat,dc=$LDAP_DC,dc=com"
+LDAP_GROUP_SEARCH_FILTER="(memberUid={1})"
+#
+HUE_USER_FILTER="objectClass=posixAccount"
+HUE_USER_NAME_ATTR="uid"
+HUE_GROUP_FILTER="objectClass=posixGroup"
+HUE_GROUP_NAME_ATTR="cn"
+HUE_GROUP_MEMBER_ATTR="memberUid"
+HUE_TEST_LDAP_USER="bob"
+HUE_TEST_LDAP_GROUP="cdp-users"
+

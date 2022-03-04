@@ -1,0 +1,32 @@
+---
+
+- name: "Push deploy-cdp.sh script to host"
+  template:
+    src: deploy-cdp.sh.j2
+    dest: /root/resources/deploy-cdp.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Deploy CDP cluster (async)"
+  shell: "/root/resources/deploy-cdp.sh 2>&1 | /bin/tee -a /root/resources/deploy-cdp.log"
+  args: 
+    executable: /bin/sh
+    chdir: /root
+    creates: /root/resources/deploy-cdp.log
+  async: 7200
+  poll: 0
+  register: cdp_deployment
+
+- name: "Check cdp deployment job status.."
+  async_status:
+    jid: "{{ cdp_deployment.ansible_job_id }}"
+  register: job_result
+  until: job_result.finished
+  delay: 60
+  retries: 100
+
+- name: "Enable httpd at boot"
+  ansible.builtin.systemd:
+    name: httpd
+    enabled: yes

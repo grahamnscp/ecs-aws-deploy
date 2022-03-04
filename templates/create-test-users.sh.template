@@ -1,0 +1,46 @@
+#!/bin/bash
+
+export kdc_realm=##KRB_REALM##
+
+CWD=`pwd`
+
+groupadd t1group
+groupadd t2group
+
+useradd -g t1group -m t1user
+useradd -g t1group -m t1admin
+useradd -g t2group -m t2user
+useradd -g t2group -m t2admin
+
+usermod -G cdp-users t1user
+usermod -G cdp-users t1admin
+usermod -G cdp-admins t1admin
+usermod -G cdp-users t2user
+
+echo t1user | passwd --stdin t1user
+echo t1admin | passwd --stdin t1admin
+echo t2user | passwd --stdin t2user
+echo t2admin | passwd --stdin t2admin
+
+#mkdir -p /etc/security/keytabs
+#cd /etc/security/keytabs
+cd /keytabs
+
+kadmin.local -q "addprinc -randkey t1user/$(hostname -f)@${kdc_realm}"
+kadmin.local -q "addprinc -randkey t1admin/$(hostname -f)@${kdc_realm}"
+kadmin.local -q "addprinc -randkey t2user/$(hostname -f)@${kdc_realm}"
+kadmin.local -q "addprinc -randkey t2admin/$(hostname -f)@${kdc_realm}"
+
+kadmin.local -q "xst -k t1user.keytab t1user/$(hostname -f)@${kdc_realm}"
+kadmin.local -q "xst -k t1admin.keytab t1admin/$(hostname -f)@${kdc_realm}"
+kadmin.local -q "xst -k t2user.keytab t2user/$(hostname -f)@${kdc_realm}"
+kadmin.local -q "xst -k t2admin.keytab t2admin/$(hostname -f)@${kdc_realm}"
+chmod 444 *keytab
+
+kadmin.local -q "change_password -pw t1user t1user/$(hostname -f)@${kdc_realm}"
+kadmin.local -q "change_password -pw t1admin t1admin/$(hostname -f)@${kdc_realm}"
+kadmin.local -q "change_password -pw t2user t2user/$(hostname -f)@${kdc_realm}"
+kadmin.local -q "change_password -pw t2admin t2admin/$(hostname -f)@${kdc_realm}"
+
+cd $CWD
+

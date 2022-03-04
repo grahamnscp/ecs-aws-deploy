@@ -1,0 +1,189 @@
+# Reconfigure cm external auth for ldap
+
+- name: "set cm authorization_backend_order to EXTERNAL_AND_DB"
+  cm_api:
+    endpoint: /cm/config
+    method: PUT
+    body: '{ "items": [ { "name": "authorization_backend_order", "value": "EXTERNAL_AND_DB" } ] }'
+
+- name: "set cm ldap_type to LDAP"
+  cm_api:
+    endpoint: /cm/config
+    method: PUT
+    body: '{ "items": [ { "name": "ldap_type", "value": "LDAP" } ] }'
+
+- name: set cm ldap_url to {{ ldap_url }}
+  cm_api:
+    endpoint: /cm/config
+    method: PUT
+    body: '{ "items": [ { "name": "ldap_url", "value": "{{ ldap_url }}" } ] }'
+
+- name: set cm ldap_bind_dn to {{ ldap_bind_dn }}
+  cm_api:
+    endpoint: /cm/config
+    method: PUT
+    body: '{ "items": [ { "name": "ldap_bind_dn", "value": "{{ ldap_bind_dn }}" } ] }'
+
+- name: set cm ldap_bind_pw
+  cm_api:
+    endpoint: /cm/config
+    method: PUT
+    body: '{ "items": [ { "name": "ldap_bind_pw", "value": "{{ ldap_bind_pw }}" } ] }'
+
+- name: set cm ldap_user_base to {{ ldap_user_search_base }}
+  cm_api:
+    endpoint: /cm/config
+    method: PUT
+    body: '{ "items": [ { "name": "ldap_user_search_base", "value": "{{ ldap_user_search_base }}" } ] }'
+
+- name: set cm ldap_user_serach_filter to {{ ldap_user_search_filter }}
+  cm_api:
+    endpoint: /cm/config
+    method: PUT
+    body: '{ "items": [ { "name": "ldap_user_search_filter", "value": "{{ ldap_user_search_filter }}" } ] }'
+
+- name: set cm ldap_group_search_base to {{ ldap_group_search_base }}
+  cm_api:
+    endpoint: /cm/config
+    method: PUT
+    body: '{ "items": [ { "name": "ldap_group_search_base", "value": "{{ ldap_group_search_base }}" } ] }'
+
+- name: set cm ldap_group_search_filter to {{ ldap_group_search_filter }}
+  cm_api:
+    endpoint: /cm/config
+    method: PUT
+    body: '{ "items": [ { "name": "ldap_group_search_filter", "value": "{{ ldap_group_search_filter }}" } ] }'
+
+
+# Do last
+- name: set cm auth_backend_order to DB_THEN_LDAP
+  cm_api:
+    endpoint: /cm/config
+    method: PUT
+    body: '{ "items": [ { "name": "auth_backend_order", "value": "DB_THEN_LDAP" } ] }'
+
+#PUT /api/v31/cm/service/roleConfigGroups/mgmt-NAVIGATORMETASERVER-BASE/config
+#{
+#  "items": [
+#    {
+#      "name": "auth_backend_order",
+#      "value": "CM_THEN_EXTERNAL"
+#    }
+#  ]
+#}
+
+# Hue LDAP Auth
+- name: "set Hue LDAP auth"
+  cm_api:
+    endpoint: /clusters/{{ cdp_cluster_name }}/services/hue/config
+    method: PUT
+    body: '{ "items": [ { "name": "auth_backend", "value": "desktop.auth.backend.LdapBackend,desktop.auth.backend.AllowFirstUserDjangoBackend" } ] }'
+
+#- name: "set Hue: "
+#  cm_api:
+#    endpoint: /clusters/{{ cdp_cluster_name }}/services/hue/config
+#    method: PUT
+#    body: '{ "items": [ { "name": "xxx", "value": "xxxx" } ] }'
+
+- name: "set Hue ldap_url to {{ ldap_url }}"
+  cm_api:
+    endpoint: /clusters/{{ cdp_cluster_name }}/services/hue/config
+    method: PUT
+    body: '{ "items": [ { "name": "ldap_url", "value": "{{ ldap_url }}" } ] }'
+
+- name: "set Hue use_start_tls to false"
+  cm_api:
+    endpoint: /clusters/{{ cdp_cluster_name }}/services/hue/config
+    method: PUT
+    body: '{ "items": [ { "name": "use_start_tls", "value": "false" } ] }'
+
+- name: "set Hue search_bind_authentication to true"
+  cm_api:
+    endpoint: /clusters/{{ cdp_cluster_name }}/services/hue/config
+    method: PUT
+    body: '{ "items": [ { "name": "search_bind_authentication", "value": "true" } ] }'
+
+- name: "set Hue create_users_on_login to true"
+  cm_api:
+    endpoint: /clusters/{{ cdp_cluster_name }}/services/hue/config
+    method: PUT
+    body: '{ "items": [ { "name": "create_users_on_login", "value": "true" } ] }'
+
+- name: "set Hue bind_dn to {{ ldap_bind_dn }}"
+  cm_api:
+    endpoint: /clusters/{{ cdp_cluster_name }}/services/hue/config
+    method: PUT
+    body: '{ "items": [ { "name": "bind_dn", "value": "{{ ldap_bind_dn }}" } ] }'
+
+- name: "set Hue bind_password"
+  cm_api:
+    endpoint: /clusters/{{ cdp_cluster_name }}/services/hue/config
+    method: PUT
+    body: '{ "items": [ { "name": "bind_password", "value": "{{ ldap_bind_pw }}" } ] }'
+
+- name: "set Hue test_ldap_user to {{ hue_test_ldap_user }}"
+  cm_api:
+    endpoint: /clusters/{{ cdp_cluster_name }}/services/hue/config
+    method: PUT
+    body: '{ "items": [ { "name": "test_ldap_user", "value": "{{ hue_test_ldap_user }}" } ] }'
+
+- name: "set Hue test_ldap_group to {{ hue_test_ldap_group }}"
+  cm_api:
+    endpoint: /clusters/{{ cdp_cluster_name }}/services/hue/config
+    method: PUT
+    body: '{ "items": [ { "name": "test_ldap_group", "value": "{{ hue_test_ldap_group }}" } ] }'
+
+- name: "set Hue user_filter to {{ hue_user_filter }}"
+  cm_api:
+    endpoint: /clusters/{{ cdp_cluster_name }}/services/hue/config
+    method: PUT
+    body: '{ "items": [ { "name": "user_filter", "value": "{{ hue_user_filter }}" } ] }'
+
+- name: "set Hue user_name_attr to {{ hue_user_name_attr }}"
+  cm_api:
+    endpoint: /clusters/{{ cdp_cluster_name }}/services/hue/config
+    method: PUT
+    body: '{ "items": [ { "name": "user_name_attr", "value": "{{ hue_user_name_attr }}" } ] }'
+
+- name: "set Hue group_filter {{ hue_group_filter }}"
+  cm_api:
+    endpoint: /clusters/{{ cdp_cluster_name }}/services/hue/config
+    method: PUT
+    body: '{ "items": [ { "name": "group_filter", "value": "{{ hue_group_filter }}" } ] }'
+
+- name: "set Hue group_name_attr {{ hue_group_name_attr }}"
+  cm_api:
+    endpoint: /clusters/{{ cdp_cluster_name }}/services/hue/config
+    method: PUT
+    body: '{ "items": [ { "name": "group_name_attr", "value": "{{ hue_group_name_attr }}" } ] }'
+
+- name: "set Hue group_member_attr {{ hue_group_member_attr }}"
+  cm_api:
+    endpoint: /clusters/{{ cdp_cluster_name }}/services/hue/config
+    method: PUT
+    body: '{ "items": [ { "name": "group_member_attr", "value": "{{ hue_group_member_attr }}" } ] }'
+
+
+# Restart cluster stale config: https://archive.cloudera.com/cm6/6.3.1/generic/jar/cm_api/apidocs/json_ApiRestartClusterArgs.html
+- name: "Restarting the CDP cluster stale services.."
+  cm_api:
+    endpoint: /clusters/{{ cdp_cluster_name }}/commands/restart
+    method: POST
+    body:
+      restartOnlyStaleServices: true
+      redeployClientConfiguration: true
+
+# Example of POST with body inline
+#- name: "Restarting the CDP cluster stale services.."
+#  cm_api:
+#    endpoint: /clusters/{{ cdp_cluster_name }}/commands/restart
+#    method: POST
+#    body: '{"restartOnlyStaleServices": true,"redeployClientConfiguration": true}'
+
+# Restart Hue service
+#- name: "Restart Hue Service"
+#  cm_api:
+#    endpoint: /clusters/{{ cdp_cluster_name }}/services/hue/commands/restart
+#    method: POST
+#    status_code: [200, 400]
+

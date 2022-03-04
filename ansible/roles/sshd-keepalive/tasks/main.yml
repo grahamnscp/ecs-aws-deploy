@@ -1,0 +1,27 @@
+---
+
+- name: "sshd set TCPKeepAlive yes"
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#TCPKeepAlive'
+    line: 'TCPKeepAlive yes'
+
+- name: "sshd set ClientAliveInterval"
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#ClientAliveInterval'
+    line: 'ClientAliveInterval 1m'
+
+- name: "sshd set ClientAliveCountMax"
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#ClientAliveCountMax'
+    line: 'ClientAliveCountMax 2'
+
+
+- name: "restart sshd"
+  systemd:
+     name: sshd 
+     state: restarted
+     daemon_reload: yes
+

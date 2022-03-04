@@ -1,0 +1,19 @@
+# setup the repo
+
+- name: "Updating cloudera-manager yum repo"
+  template:
+    src: cloudera-manager.repo.j2
+    dest: /etc/yum.repos.d/cloudera-manager.repo
+    owner: root
+    group: root
+
+# clean some old ami repo files that error
+- name: "Renaming nodesource-el7.repo"
+  command: creates="/etc/yum.repos.d/nodesource-el7.repo.save" mv /etc/yum.repos.d/nodesource-el7.repo /etc/yum.repos.d/nodesource-el7.repo.save
+
+- name: "Renaming pgdg-redhat-all.repo"
+  command: creates="/etc/yum.repos.d/pgdg-redhat-all.repo.save" mv /etc/yum.repos.d/pgdg-redhat-all.repo /etc/yum.repos.d/pgdg-redhat-all.repo.save
+
+- name: "Renaming cloudera-manager-trial.repo"
+  command: creates="/etc/yum.repos.d/cloudera-manager-trial.repo.save" mv /etc/yum.repos.d/cloudera-manager-trial.repo /etc/yum.repos.d/cloudera-manager-trial.repo.save
+

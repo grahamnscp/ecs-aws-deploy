@@ -1,0 +1,16 @@
+# Disable the CDSW health check as cannot see pods for some reason but they are running okay
+
+# PUT /api/v31/clusters/OneNodeCluster/services/cdsw/config
+# {
+#   "items": [
+#     {
+#       "name": "CDSW_STATUS_HEALTH_test_enable",
+#       "value": "false"
+#     }
+#   ]
+# }
+- name: "Disable CDSW Health Check"
+  cm_api:
+    endpoint: /clusters/{{ cdp_cluster_name }}/services/cdsw/config
+    method: PUT
+    body: '{ "items": [ { "name": "CDSW_STATUS_HEALTH_test_enable", "value": "false" } ] }'

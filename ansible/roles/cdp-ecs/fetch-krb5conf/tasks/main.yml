@@ -1,0 +1,8 @@
+---
+
+- name: "Copy back the /etc/krb5.conf file"
+  fetch:
+    src: /etc/krb5.conf
+    dest: working-files/krb5.conf
+    flat: yes
+

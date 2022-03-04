@@ -1,0 +1,29 @@
+---
+
+- name: "Install NTP package"
+  yum: 
+    name: ntp
+    state: present
+
+- name: "Set local ntp infra server"
+  template:
+    src: ntp.conf.j2
+    dest: /etc/ntp.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "Open ntp firewall port in iptables (udp)"
+  ansible.builtin.iptables:
+    chain: INPUT
+    protocol: udp
+    destination_ports:
+      - "123"
+    jump: ACCEPT
+
+- name: "Ensure ntpd service is enabled and started"
+  systemd:
+    name: ntpd
+    state: started
+    enabled: yes
+

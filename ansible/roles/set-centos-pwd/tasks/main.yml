@@ -1,0 +1,15 @@
+---
+
+- name: "set centos pwd"
+  user:
+    name: centos
+    update_password: always
+    password: "{{ centos_password|password_hash('sha512') }}"
+
+# set root pwd (to unlock incase needed on serial console for stale mount points etc)"
+- name: "set root pwd (to unlock account)"
+  user:
+    name: root
+    update_password: always
+    password: "{{ centos_password|password_hash('sha512') }}"
+

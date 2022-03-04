@@ -1,0 +1,63 @@
+
+- name: "Grab cdp hostname"
+  shell: "/bin/host cdp.{{ name_prefix }}.{{ route53_domainname }} | awk '{print $1}'"
+  args:
+    executable: /bin/sh
+  register: cdp_hostname
+
+- debug: 
+   msg: "CDP hostname: {{ cdp_hostname.stdout }}"
+
+- name: "check hostname var"
+  shell: "echo {{ cdp_hostname.stdout }}"
+
+- name: Set Cloudera Manager agent 'server_host' in config.ini
+  lineinfile:
+    dest: "/etc/cloudera-scm-agent/config.ini"
+    regexp: "^server_host"
+    line: "server_host={{ cdp_hostname.stdout }}"
+  register: scm_config
+
+- name: Set use_tls in config.ini
+  lineinfile:
+    dest: "/etc/cloudera-scm-agent/config.ini"
+    regexp: "^use_tls"
+    line: "use_tls=1"
+  register: scm_config
+
+- name: Set verify_cert_file in config.ini
+  lineinfile:
+    dest: "/etc/cloudera-scm-agent/config.ini"
+    regexp: "^(# )?verify_cert_file="
+    line: "verify_cert_file=/opt/cloudera/security/x509/truststore.pem"
+  register: scm_config
+
+- name: Set client_key_file in config.ini
+  lineinfile:
+    dest: "/etc/cloudera-scm-agent/config.ini"
+    regexp: "^(# )?client_key_file="
+    line: "client_key_file=/opt/cloudera/security/x509/key.pem"
+  register: scm_config
+
+- name: Set client_keypw_file in config.ini
+  lineinfile:
+    dest: "/etc/cloudera-scm-agent/config.ini"
+    regexp: "^(# )?client_keypw_file="
+    line: "client_keypw_file=/opt/cloudera/security/x509/pwfile"
+  register: scm_config
+
+- name: Set client_cert_file in config.ini
+  lineinfile:
+    dest: "/etc/cloudera-scm-agent/config.ini"
+    regexp: "^(# )?client_cert_file="
+    line: "client_cert_file=/opt/cloudera/security/x509/cert.pem"
+  register: scm_config
+
+
+- name: restart cloudera-scm-agent
+  systemd:
+    name: cloudera-scm-agent
+    daemon_reload: yes
+    state: restarted
+  when: scm_config.changed
+

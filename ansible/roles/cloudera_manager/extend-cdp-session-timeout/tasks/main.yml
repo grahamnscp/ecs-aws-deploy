@@ -1,0 +1,19 @@
+# Extend the default CDP session timeout from install default
+
+#PUT /api/v31/cm/config
+#{
+#  "items": [
+#    {
+#      "name": "session_timeout",
+#      "value": 1800
+#    }
+#  ]
+#}
+# 1800 -> 30 minutes (default)
+# 7200 -> 120 minutes / 2 hours
+- name: "Extend CDP session timeout value"
+  cm_api:
+    endpoint: /cm/config
+    method: PUT
+    body: '{ "items": [ { "name": "session_timeout", "value": "7200" } ] }'
+

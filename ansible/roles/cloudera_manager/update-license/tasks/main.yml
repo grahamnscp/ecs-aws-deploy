@@ -1,0 +1,38 @@
+---
+
+- name: Get current Cloudera license status
+  cm_api:
+    endpoint: /cm/license
+    method: GET
+    status_code: 200,404
+  register: license_response
+
+- set_fact:
+    license_not_installed: >-
+      {{ license_response.json.message | default('') in [
+      'This installation is currently running Cloudera Express.',
+      'This installation currently does not have a Cloudera license.',
+      'This installation currently has no license.'
+      ]}}
+
+- name: Upload license file to Cloudera Manager server
+  copy:
+    src: "{{ cloudera_manager_license_file }}"
+    dest: /tmp/license.txt
+    mode: 0600
+
+- name: Post license file to Cloudera Manager API
+  shell: >
+    curl
+    --insecure
+    --user {{ cloudera_manager_api_user }}:{{ cloudera_manager_api_password }}
+    --request POST
+    --header 'Content-Type:multipart/form-data'
+    --form license=@/tmp/license.txt
+    {{ license_response.url }} 2>&1 | tee -a /root/update-license.log
+  args:
+    warn: False
+    creates: /root/update-license.log
+  register: response
+#  failed_when: "'owner' not in response.stdout"
+

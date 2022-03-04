@@ -1,0 +1,32 @@
+---
+
+- name: "Install NTP package"
+  yum: 
+    name: ntp
+    state: present
+
+- name: "Set ntp to point to local infra ntp server"
+  template:
+    src: ntp.conf.j2
+    dest: /etc/ntp.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "Check if clock is synchronised"
+  shell: "/bin/ntpstat"
+  register: status
+  ignore_errors: yes # command will fail if service not running
+  changed_when: false
+  
+  # Force clock sync if it is not
+- include: sync-clock.yml
+  ignore_errors: yes 
+  when: status.rc != 0
+
+- name: "Ensure ntpd service is enabled and started"
+  systemd:
+    name: ntpd
+    state: started
+    enabled: yes
+
