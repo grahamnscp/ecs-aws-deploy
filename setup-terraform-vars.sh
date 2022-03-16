@@ -31,7 +31,7 @@ sed -i $SEDBAK "s/##AWS_REGION##/$AWS_REGION/" ./tf/variables.tf
 sed -i $SEDBAK "s/##AWS_KEY_PAIR_NAME##/$AWS_KEY_PAIR_NAME/" ./tf/variables.tf
 sed -i $SEDBAK "s/##IP_CIDR_ME##/$IP_CIDR_ME/" ./tf/variables.tf
 sed -i $SEDBAK "s/##IP_CIDR_ME_VPN##/$IP_CIDR_ME_VPN/" ./tf/variables.tf
-sed -i $SEDBAK "s/##IP_CIDR_OTHER##/$IP_CIDR_ME_VPN/" ./tf/variables.tf
+sed -i $SEDBAK "s/##IP_CIDR_OTHER##/$IP_CIDR_OTHER/" ./tf/variables.tf
 sed -i $SEDBAK "s/##AWS_AMI##/$AWS_AMI/" ./tf/variables.tf
 sed -i $SEDBAK "s/##AWS_INSTANCE_TYPE_INFRA##/$AWS_INSTANCE_TYPE_INFRA/" ./tf/variables.tf
 sed -i $SEDBAK "s/##AWS_INSTANCE_TYPE_CDP##/$AWS_INSTANCE_TYPE_CDP/" ./tf/variables.tf
