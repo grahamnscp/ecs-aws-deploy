@@ -2,4 +2,4 @@
 
 docker run -it -d --restart unless-stopped --name={{ name_prefix }}-dns \
   --dns=8.8.8.8 --dns=8.8.4.4 -p 53:53/udp -p 53:53 \
-  grahamh/bind-docker:{{ name_prefix }}
+  {{ dockerhub_user }}/bind-docker:{{ name_prefix }}
